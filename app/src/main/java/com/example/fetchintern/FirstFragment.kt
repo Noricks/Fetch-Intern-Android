@@ -62,11 +62,11 @@ class FirstFragment : Fragment() {
                             }
                         }
                         val inflater = LayoutInflater.from(binding.table.context)
-                        val row = inflater.inflate(R.layout.item_list, null, false)
-                        row.findViewById<TextView>(R.id.id).text = "ID"
-                        row.findViewById<TextView>(R.id.listId).text = "List ID"
-                        row.findViewById<TextView>(R.id.name).text = "Name"
-                        binding.table.addView(row)
+//                        val row = inflater.inflate(R.layout.item_list, null, false)
+//                        row.findViewById<TextView>(R.id.id).text = "ID"
+//                        row.findViewById<TextView>(R.id.listId).text = "List ID"
+//                        row.findViewById<TextView>(R.id.name).text = "Name"
+//                        binding.table.addView(row)
                         for (i in 0 until listItemArray.size) {
                             val listItem = listItemArray[i]
                             val row = inflater.inflate(R.layout.item_list, null, false)
