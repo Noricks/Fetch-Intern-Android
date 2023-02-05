@@ -61,18 +61,20 @@ class FirstFragment : Fragment() {
                                 listItemArray.add(listItem)
                             }
                         }
+                        val listItemArrayComparator = Comparator<ListItem> { o1, o2 ->
+                            if (o1.listId == o2.listId) {
+                                o1.name.compareTo(o2.name)
+                            } else {
+                                o1.listId.compareTo(o2.listId)
+                            }
+                        }
+                        val listItemArray = listItemArray.filterNot { it.name == "null" || it.name == "" }.sortedWith(listItemArrayComparator)
                         val inflater = LayoutInflater.from(binding.table.context)
-//                        val row = inflater.inflate(R.layout.item_list, null, false)
-//                        row.findViewById<TextView>(R.id.id).text = "ID"
-//                        row.findViewById<TextView>(R.id.listId).text = "List ID"
-//                        row.findViewById<TextView>(R.id.name).text = "Name"
-//                        binding.table.addView(row)
-                        for (i in 0 until listItemArray.size) {
-                            val listItem = listItemArray[i]
+                        for (element in listItemArray) {
                             val row = inflater.inflate(R.layout.item_list, null, false)
-                            row.findViewById<TextView>(R.id.id).text = listItem.id.toString()
-                            row.findViewById<TextView>(R.id.listId).text = listItem.listId.toString()
-                            row.findViewById<TextView>(R.id.name).text = listItem.name
+                            row.findViewById<TextView>(R.id.id).text = element.id.toString()
+                            row.findViewById<TextView>(R.id.listId).text = element.listId.toString()
+                            row.findViewById<TextView>(R.id.name).text = element.name
                             binding.table.addView(row)
                         }
                     } catch (e: JSONException) {
