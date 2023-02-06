@@ -13,6 +13,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.fetchintern.databinding.FragmentFirstBinding
 import com.example.fetchintern.databinding.ItemListBinding
+import com.example.fetchintern.databinding.RightItemsBinding
 import org.json.JSONArray
 import org.json.JSONException
 
@@ -69,14 +70,23 @@ class FirstFragment : Fragment() {
                                 o1.listId.compareTo(o2.listId)
                             }
                         }
-                        val listItemArray = listItemArray.filterNot { it.name == "null" || it.name == "" }.sortedWith(listItemArrayComparator)
-                        for (element in listItemArray) {
-                            val row = ItemListBinding.inflate(layoutInflater)
+                        val filteredArray = listItemArray.filterNot { it.name == "null" || it.name == "" }.sortedWith(listItemArrayComparator)
+                        var prevListId = filteredArray[0].listId
+                        var block:ItemListBinding = ItemListBinding.inflate(layoutInflater)
+                        block.listId.text = prevListId.toString()
+                        for (element in filteredArray) {
+                            if (prevListId != element.listId) {
+                                binding.table.addView(block.root)
+                                block = ItemListBinding.inflate(layoutInflater)
+                                block.listId.text = element.listId.toString()
+                                prevListId = element.listId
+                            }
+                            val row = RightItemsBinding.inflate(layoutInflater)
                             row.id.text = element.id.toString()
                             row.name.text = element.name
-                            row.listId.text = element.listId.toString()
-                            binding.table.addView(row.root)
+                            block.right.addView(row.root)
                         }
+                        binding.table.addView(block.root)
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
