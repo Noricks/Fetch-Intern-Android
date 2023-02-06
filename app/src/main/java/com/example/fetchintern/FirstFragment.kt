@@ -1,6 +1,5 @@
 package com.example.fetchintern
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,24 +10,20 @@ import androidx.fragment.app.Fragment
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.example.fetchintern.Util.Companion.parseJSONArray
+import com.example.fetchintern.Util.Companion.processArray
 import com.example.fetchintern.databinding.FragmentFirstBinding
 import com.example.fetchintern.databinding.ItemListBinding
 import com.example.fetchintern.databinding.RightItemsBinding
 import org.json.JSONArray
 import org.json.JSONException
 
-
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-
+    private val fetchURL = "https://fetch-hiring.s3.amazonaws.com/hiring.json"
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -42,51 +37,36 @@ class FirstFragment : Fragment() {
         loadData()
     }
 
-    private fun loadData() {
+    private fun renderTable(filteredArray: List<ListItem>) {
+        var prevListId = filteredArray[0].listId
+        var block:ItemListBinding = ItemListBinding.inflate(layoutInflater)
+        block.listId.text = prevListId.toString()
+        for (element in filteredArray) {
+            if (prevListId != element.listId) {
+                binding.table.addView(block.root)
+                block = ItemListBinding.inflate(layoutInflater)
+                block.listId.text = element.listId.toString()
+                prevListId = element.listId
+            }
+            val row = RightItemsBinding.inflate(layoutInflater)
+            row.id.text = element.id.toString()
+            row.name.text = element.name
+            block.right.addView(row.root)
+        }
+        binding.table.addView(block.root)
+    }
+
+    private fun loadData(url: String = fetchURL) {
         val queue = Volley.newRequestQueue(binding.root.context)
-        val listItemArray = ArrayList<ListItem>()
-        val url = "https://fetch-hiring.s3.amazonaws.com/hiring.json"
+
         val request: StringRequest =
-            @SuppressLint("SetTextI18n")
             object : StringRequest(Method.GET, url,
                 Response.Listener { response ->
                     try {
                         val jsonArray = JSONArray(response)
-                        if (jsonArray.length() > 0) {
-                            for (i in 0 until jsonArray.length()) {
-                                val jsonObject = jsonArray.getJSONObject(i)
-                                val listItem = ListItem(
-                                    jsonObject.getInt("id"),
-                                    jsonObject.getInt("listId"),
-                                    jsonObject.getString("name")
-                                )
-                                listItemArray.add(listItem)
-                            }
-                        }
-                        val listItemArrayComparator = Comparator<ListItem> { o1, o2 ->
-                            if (o1.listId == o2.listId) {
-                                o1.name.compareTo(o2.name)
-                            } else {
-                                o1.listId.compareTo(o2.listId)
-                            }
-                        }
-                        val filteredArray = listItemArray.filterNot { it.name == "null" || it.name == "" }.sortedWith(listItemArrayComparator)
-                        var prevListId = filteredArray[0].listId
-                        var block:ItemListBinding = ItemListBinding.inflate(layoutInflater)
-                        block.listId.text = prevListId.toString()
-                        for (element in filteredArray) {
-                            if (prevListId != element.listId) {
-                                binding.table.addView(block.root)
-                                block = ItemListBinding.inflate(layoutInflater)
-                                block.listId.text = element.listId.toString()
-                                prevListId = element.listId
-                            }
-                            val row = RightItemsBinding.inflate(layoutInflater)
-                            row.id.text = element.id.toString()
-                            row.name.text = element.name
-                            block.right.addView(row.root)
-                        }
-                        binding.table.addView(block.root)
+                        val listItemArray = parseJSONArray(jsonArray)
+                        val filteredArray = processArray(listItemArray)
+                        renderTable(filteredArray)
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
