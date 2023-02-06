@@ -18,11 +18,16 @@ import com.example.fetchintern.databinding.RightItemsBinding
 import org.json.JSONArray
 import org.json.JSONException
 
+/**
+ * A simple [Fragment] subclass which displays the data from the API.
+ */
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
 
     private val binding get() = _binding!!
+
+    // URL for the API
     private val fetchURL = "https://fetch-hiring.s3.amazonaws.com/hiring.json"
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +42,12 @@ class FirstFragment : Fragment() {
         loadData()
     }
 
+    /**
+     * This function is called when the data is loaded from the API.
+     * It parses the data and calls the function to render the table.
+     *
+     * @param filteredArray The array of data to be rendered.
+     */
     private fun renderTable(filteredArray: List<ListItem>) {
         var prevListId = filteredArray[0].listId
         var block:ItemListBinding = ItemListBinding.inflate(layoutInflater)
@@ -56,6 +67,12 @@ class FirstFragment : Fragment() {
         binding.table.addView(block.root)
     }
 
+    /**
+     * This function is called when the data is loaded from the API.
+     * It parses the data and calls the function to render the table.
+     *
+     * @param url The URL to load the data from.
+     */
     private fun loadData(url: String = fetchURL) {
         val queue = Volley.newRequestQueue(binding.root.context)
 

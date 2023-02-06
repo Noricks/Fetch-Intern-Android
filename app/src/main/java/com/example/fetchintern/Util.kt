@@ -4,6 +4,11 @@ import org.json.JSONArray
 
 class Util {
     companion object {
+        /**
+         * Parses a JSONArray into an ArrayList of ListItems.
+         * @param jsonArray The JSONArray to parse.
+         * @return An ArrayList of ListItems.
+         */
         fun parseJSONArray(jsonArray: JSONArray): ArrayList<ListItem> {
             val listItemArray = ArrayList<ListItem>()
             if (jsonArray.length() > 0) {
@@ -20,6 +25,11 @@ class Util {
             return listItemArray
         }
 
+        /**
+         * Processes an ArrayList of ListItems.
+         * @param listItemArray The ArrayList of ListItems to process.
+         * @return A processed ArrayList of ListItems.
+         */
         fun processArray(listItemArray: ArrayList<ListItem>): List<ListItem> {
             val listItemArrayComparator = Comparator<ListItem> { o1, o2 ->
                 if (o1.listId == o2.listId) {
